@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>皮膚科専門医試験 演習</title>
+<style>
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --fg:#1b2230; --muted:#667085; --line:#d8dee8;
+  --accent:#2b6cb0; --accent-fg:#ffffff; --ok:#1f7a45; --ok-bg:#e5f4ec; --ng:#b3261e; --ng-bg:#fbeaea;
+  --warn:#8a5a00; --warn-bg:#fff3d9; --sel:#e6f0fb;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12151a; --card:#1c2129; --fg:#e7eaf0; --muted:#98a2b3; --line:#2f3743;
+    --accent:#6aa7e8; --accent-fg:#0d1117; --ok:#6fd39b; --ok-bg:#15301f; --ng:#ff8a80; --ng-bg:#3a1c1b;
+    --warn:#f2c46b; --warn-bg:#3a2f12; --sel:#1f3350;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 "Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:16px;margin:0;flex:1;min-width:150px}
+header .who{font-size:12px;color:var(--muted)}
+nav{display:flex;gap:4px}
+nav button{border:0;background:none;color:var(--muted);font:inherit;font-size:14px;padding:7px 12px;border-radius:7px;cursor:pointer}
+nav button[aria-current="true"]{background:var(--sel);color:var(--accent);font-weight:700}
+main{max-width:760px;margin:0 auto;padding:16px 14px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 14px}
+h2{font-size:15px;margin:0 0 10px}
+.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.opt{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--card);text-align:left;font:inherit;color:inherit;min-height:48px}
+.opt b{display:block;font-size:14px}
+.opt span{font-size:12px;color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--sel)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;background:var(--card);font:inherit;font-size:13.5px;color:inherit}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--sel);font-weight:600}
+.chip small{color:var(--muted);margin-left:4px}
+.primary{width:100%;background:var(--accent);color:var(--accent-fg);border:0;border-radius:12px;padding:14px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;min-height:52px}
+.primary:disabled{opacity:.5}
+.sub{background:none;border:1.5px solid var(--line);color:var(--fg);border-radius:10px;padding:9px 14px;font:inherit;font-size:14px;cursor:pointer;min-height:42px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stat{flex:1;min-width:110px;text-align:center}
+.stat .v{font-size:22px;font-weight:700}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.bar.low>i{background:var(--ng)} .bar.mid>i{background:#d99a00} .bar.high>i{background:var(--ok)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.progress>i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.stem{white-space:pre-wrap;font-size:17px;margin:6px 0 14px}
+.choice{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;background:var(--card);font:inherit;color:inherit;cursor:pointer;min-height:54px}
+.choice .lb{flex:0 0 26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.choice[aria-pressed="true"]{border-color:var(--accent);background:var(--sel)}
+.choice.correct{border-color:var(--ok);background:var(--ok-bg)}
+.choice.wrong{border-color:var(--ng);background:var(--ng-bg)}
+.choice:disabled{cursor:default;color:inherit}
+.verdict{font-size:18px;font-weight:800;margin:12px 0 4px}
+.verdict.ok{color:var(--ok)} .verdict.ng{color:var(--ng)}
+.expl{white-space:pre-wrap;margin:6px 0 10px}
+.badge{display:inline-block;font-size:12px;padding:1px 9px;border-radius:999px;margin-right:6px}
+.badge.ok{background:var(--ok-bg);color:var(--ok)} .badge.warn{background:var(--warn-bg);color:var(--warn)} .badge.ng{background:var(--ng-bg);color:var(--ng)}
+blockquote{margin:6px 0;padding:6px 12px;border-left:3px solid var(--line);color:var(--muted);white-space:pre-wrap;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:middle}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ng);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;max-width:90vw;z-index:20}
+.toast.ok{background:var(--ok)}
+.flagbox{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
+.flagbox summary{cursor:pointer;font-size:14px;color:var(--muted);padding:6px 0}
+.flagbox textarea{font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%;min-height:80px;resize:vertical}
+.flagbox .chip[aria-pressed="true"]{border-color:var(--ng);background:var(--ng-bg)}
+.flagbox .danger{background:var(--ng);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-size:14px;cursor:pointer;min-height:42px}
+.flagbox .danger:disabled{opacity:.5}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;z-index:15;color:#fff;font-size:15px}
+.hist{display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.hist .mark{font-weight:800;flex:0 0 22px}
+.hist .mark.ok{color:var(--ok)} .hist .mark.ng{color:var(--ng)}
+.daily{display:flex;gap:4px;align-items:flex-end;height:70px}
+.daily div{flex:1;background:var(--line);border-radius:3px 3px 0 0;position:relative;min-height:3px}
+.daily div i{position:absolute;left:0;right:0;bottom:0;background:var(--accent);border-radius:3px 3px 0 0}
+input[type=text]{font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+</style>
+</head>
+<body>
+<header>
+  <h1>皮膚科専門医試験 演習</h1>
+  <span class="who" id="who"></span>
+  <nav>
+    <button data-screen="home" aria-current="true">演習</button>
+    <button data-screen="stats" aria-current="false">成績・履歴</button>
+  </nav>
+</header>
+<main>
+  <!-- ホーム -->
+  <section id="home">
+    <div class="card" id="code-card" hidden>
+      <h2>パスコード</h2>
+      <div class="muted" style="margin-bottom:8px">パスコードを入力してください(この端末には覚えられます)。</div>
+      <div class="row"><input type="password" id="code-input" autocomplete="off" placeholder="パスコード"><button class="sub" id="code-save">開く</button></div>
+    </div>
+    <div class="card" id="name-card" hidden>
+      <h2>使う人を選ぶ</h2>
+      <div class="muted" style="margin-bottom:8px">Googleアカウントとは無関係に、アプリ内の名前で成績を分けます。端末のキャッシュを消しても、同じ名前を選べば同じ成績に戻ります。</div>
+      <div class="chips" id="profiles" style="margin-bottom:10px"></div>
+      <div class="muted" style="margin-bottom:6px">新しい名前を追加:</div>
+      <div class="row"><input type="text" id="name-input" maxlength="40" placeholder="例: haruna"><button class="sub" id="name-save">追加して開始</button></div>
+    </div>
+    <div class="card"><div class="row" id="summary-stats"></div></div>
+    <div class="card">
+      <h2>出題方法</h2>
+      <div class="grid" id="modes"></div>
+    </div>
+    <div class="card">
+      <h2>出題の種類</h2>
+      <div class="chips" id="origins"></div>
+      <div class="muted" style="margin-top:6px">どちらの問題かは、回答後の解説ページで表示されます。</div>
+    </div>
+    <div class="card">
+      <h2>過去問の出題年度(未選択 = 全年度)</h2>
+      <div class="chips" id="years"></div>
+      <div class="muted" style="margin-top:6px">新作問題には適用されません。</div>
+    </div>
+    <div class="card">
+      <h2>出題数</h2>
+      <div class="chips" id="counts"></div>
+    </div>
+    <div class="card">
+      <h2>章(未選択 = 全章)</h2>
+      <div class="chips" id="chapters"></div>
+    </div>
+    <div class="card">
+      <label class="row" style="cursor:pointer"><input type="checkbox" id="instant" checked> <span>単一選択はタップで即回答(複数選択は「回答する」ボタン)</span></label>
+    </div>
+    <button class="primary" id="start">演習を始める</button>
+  </section>
+
+  <!-- 出題 -->
+  <section id="quiz" hidden>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="card">
+      <div class="muted" id="qmeta"></div>
+      <div class="stem" id="qstem"></div>
+      <div id="qchoices"></div>
+      <button class="primary" id="submit" hidden>回答する</button>
+      <div id="qresult"></div>
+      <button class="primary" id="next" hidden style="margin-top:12px">次へ</button>
+    </div>
+    <button class="sub" id="quit">中断して結果を見る</button>
+  </section>
+
+  <!-- 結果 -->
+  <section id="summary" hidden>
+    <div class="card">
+      <h2>結果</h2>
+      <div class="row" id="sum-stats"></div>
+    </div>
+    <div class="card" id="sum-list"></div>
+    <div class="row">
+      <button class="sub" id="retry-wrong">間違えた問題だけもう一度</button>
+      <button class="sub" id="to-home">ホームへ</button>
+    </div>
+  </section>
+
+  <!-- 成績 -->
+  <section id="stats" hidden></section>
+</main>
+<div class="overlay" id="loading" hidden>読み込み中…</div>
+
+<script>
+"use strict";
+var S = { boot: null, quiz: null, mode: "new", origin: "mix", n: 10, chapters: [], years: [], name: "", code: "", codeOk: false, screen: "home" };
+
+function el(tag, props) {
+  var e = document.createElement(tag);
+  var p = props || {};
+  Object.keys(p).forEach(function (k) {
+    var v = p[k];
+    if (k === "class") e.className = v;
+    else if (k.indexOf("on") === 0) e.addEventListener(k.slice(2), v);
+    else if (k === "disabled" || k === "hidden" || k === "value" || k === "checked") e[k] = v;
+    else e.setAttribute(k, v);
+  });
+  for (var i = 2; i < arguments.length; i++) {
+    var kids = [].concat(arguments[i]);
+    for (var j = 0; j < kids.length; j++) {
+      var kid = kids[j];
+      if (kid === null || kid === undefined || kid === false) continue;
+      e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+  }
+  return e;
+}
+function $(s) { return document.querySelector(s); }
+function pct(x) { return x === null || x === undefined ? "-" : Math.round(x * 100) + "%"; }
+function barClass(x) { return x === null ? "" : (x < 0.6 ? "low" : (x < 0.8 ? "mid" : "high")); }
+function chLabel(c) { return c === null || c === undefined ? "章不明" : "第" + c + "章"; }
+
+// Apps Script 配信ページ内なら google.script.run、別ホスティングの静的ページなら fetch で Apps Script の JSON API を呼ぶ。
+var API_URL = "https://script.google.com/macros/s/AKfycbypVjykW4JLfK_Ir3--IvaUMxbtjHMhnF-NWzin4NC1IlirgeD1hvF1cRf3xZvyvV8kog/exec";
+function gsFail(m) {
+  if (String(m).indexOf("AUTH_REQUIRED") >= 0) { S.codeOk = false; store("derm_code", ""); S.code = ""; setTimeout(loadBoot, 0); m = "パスコードが必要です"; }
+  return new Error(m);
+}
+function gs(fn) {
+  var args = [].slice.call(arguments, 1);
+  if (window.google && google.script && google.script.run) {
+    return new Promise(function (resolve, reject) {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(function (e) { reject(gsFail((e && e.message) || String(e))); })[fn].apply(null, args);
+    });
+  }
+  return fetch(API_URL, {
+    method: "POST", redirect: "follow", credentials: "omit",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ fn: fn, args: args })
+  }).then(function (res) { return res.json(); }).then(function (j) {
+    if (!j || !j.ok) throw gsFail((j && j.error) || "サーバーエラー");
+    return j.result;
+  }, function () { throw gsFail("通信に失敗しました。ネットワークを確認してください"); });
+}
+function toast(msg, ok) {
+  var t = el("div", { class: "toast" + (ok ? " ok" : "") }, msg);
+  document.body.append(t);
+  setTimeout(function () { t.remove(); }, 4500);
+}
+function loading(on) { $("#loading").hidden = !on; }
+function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+
+// ---------------------------------------------------------------- 画面切替
+function show(name) {
+  S.screen = name;
+  ["home", "quiz", "summary", "stats"].forEach(function (s) { $("#" + s).hidden = s !== name; });
+  document.querySelectorAll("nav button").forEach(function (b) {
+    b.setAttribute("aria-current", String(b.dataset.screen === name || (name === "quiz" && b.dataset.screen === "home") || (name === "summary" && b.dataset.screen === "home")));
+  });
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("nav button").forEach(function (b) {
+  b.addEventListener("click", function () {
+    if (b.dataset.screen === "stats") loadStats(); else { show("home"); loadBoot(); }
+  });
+});
+
+// ---------------------------------------------------------------- ホーム
+var MODES = [
+  { id: "new", t: "新しい問題優先", d: "未回答 → 回答が古い順" },
+  { id: "weak", t: "苦手重点", d: "不正解・正答率の低い章を多めに" },
+  { id: "wrong", t: "間違えた問題", d: "直近の回答が不正解のもの" },
+  { id: "random", t: "ランダム", d: "全体から無作為に" }
+];
+
+function renderHome() {
+  var b = S.boot;
+  $("#who").textContent = b.user;
+  $("#summary-stats").replaceChildren(
+    el("div", { class: "stat" }, el("div", { class: "v" }, b.answered + "/" + b.total), el("div", { class: "muted" }, "回答済み問題")),
+    el("div", { class: "stat" }, el("div", { class: "v" }, b.attempts ? pct(b.correct / b.attempts) : "-"), el("div", { class: "muted" }, "通算正答率")),
+    el("div", { class: "stat" }, el("div", { class: "v" }, b.wrongNow), el("div", { class: "muted" }, "要復習")));
+
+  var modes = $("#modes"); modes.replaceChildren();
+  MODES.forEach(function (m) {
+    var btn = el("button", { class: "opt", "aria-pressed": String(S.mode === m.id) }, el("b", {}, m.t), el("span", {}, m.d));
+    btn.addEventListener("click", function () { S.mode = m.id; renderHome(); });
+    modes.append(btn);
+  });
+  var origins = $("#origins"); origins.replaceChildren();
+  var nPast = b.totalPast || 0, nNew = b.total - nPast;
+  [{ id: "mix", t: "過去問と新作を混ぜる" }, { id: "past", t: "過去問のみ (" + nPast + "問)" }, { id: "new", t: "新作のみ (" + nNew + "問)" }].forEach(function (o) {
+    var c = el("button", { class: "chip", "aria-pressed": String(S.origin === o.id) }, o.t);
+    c.addEventListener("click", function () { S.origin = o.id; renderHome(); });
+    origins.append(c);
+  });
+  var yearsBox = $("#years"); yearsBox.replaceChildren();
+  var ys = (b.years || []).map(function (y) { return y.year; });
+  S.years = S.years.filter(function (y) { return ys.indexOf(y) >= 0; });
+  if (ys.length > 2) {
+    var older = ys.slice(2);     // ys は新しい年度が先。直近2年を除いた年度
+    var isPreset = S.years.length === older.length && older.every(function (y) { return S.years.indexOf(y) >= 0; });
+    var pre = el("button", { class: "chip", "aria-pressed": String(isPreset) }, "直近2年を除く");
+    pre.addEventListener("click", function () { S.years = isPreset ? [] : older.slice(); store("derm_years", JSON.stringify(S.years)); renderHome(); });
+    yearsBox.append(pre);
+  }
+  (b.years || []).forEach(function (y) {
+    var on = S.years.indexOf(y.year) >= 0;
+    var chip = el("button", { class: "chip", "aria-pressed": String(on) }, y.year + "年", el("small", {}, y.count + "問"));
+    chip.addEventListener("click", function () {
+      var i = S.years.indexOf(y.year);
+      if (i >= 0) S.years.splice(i, 1); else S.years.push(y.year);
+      store("derm_years", JSON.stringify(S.years));
+      renderHome();
+    });
+    yearsBox.append(chip);
+  });
+  var counts = $("#counts"); counts.replaceChildren();
+  [5, 10, 20, 30].forEach(function (n) {
+    var c = el("button", { class: "chip", "aria-pressed": String(S.n === n) }, n + "問");
+    c.addEventListener("click", function () { S.n = n; renderHome(); });
+    counts.append(c);
+  });
+  var box = $("#chapters"); box.replaceChildren();
+  b.chapters.forEach(function (c) {
+    var on = S.chapters.indexOf(c.chapter) >= 0;
+    var chip = el("button", { class: "chip", "aria-pressed": String(on) }, chLabel(c.chapter),
+      el("small", {}, c.accuracy === null ? c.total + "問" : pct(c.accuracy) + " / " + c.total + "問"));
+    chip.addEventListener("click", function () {
+      var i = S.chapters.indexOf(c.chapter);
+      if (i >= 0) S.chapters.splice(i, 1); else S.chapters.push(c.chapter);
+      renderHome();
+    });
+    box.append(chip);
+  });
+  if (!b.chapters.length) box.append(el("span", { class: "muted" }, "問題が登録されていません。questions シートに問題を追加してください。"));
+}
+
+function ident() { return (S.code || "") + "\u0001" + (S.name || ""); }
+
+function setHomeCards(onlyId) {
+  document.querySelectorAll("#home > .card").forEach(function (c) {
+    c.hidden = onlyId ? c.id !== onlyId : (c.id === "name-card" || c.id === "code-card");
+  });
+}
+
+async function showPicker() {
+  setHomeCards("name-card");
+  $("#who").textContent = "";
+  var box = $("#profiles");
+  box.replaceChildren(el("span", { class: "muted" }, "読み込み中…"));
+  try {
+    var names = await gs("listProfiles", S.code);
+    box.replaceChildren();
+    names.forEach(function (n) {
+      var c = el("button", { class: "chip", "aria-pressed": "false" }, n);
+      c.addEventListener("click", function () { chooseName(n); });
+      box.append(c);
+    });
+    if (!names.length) box.append(el("span", { class: "muted" }, "まだ登録がありません。下で名前を追加してください。"));
+  } catch (e) { box.replaceChildren(); toast(e.message); }
+}
+
+function chooseName(n) { S.name = n; store("derm_name", n); loadBoot(); }
+
+function showCodeCard() {
+  setHomeCards("code-card");
+  $("#who").textContent = "";
+  $("#code-input").value = "";
+}
+
+$("#code-save").addEventListener("click", async function () {
+  var v = $("#code-input").value.trim();
+  if (!v) return;
+  loading(true);
+  try {
+    var r = await gs("checkCode", v);
+    if (r.ok) { S.code = v; S.codeOk = true; store("derm_code", v); loadBoot(); }
+    else toast("パスコードが違います");
+  } catch (e) { toast(e.message); }
+  finally { loading(false); }
+});
+
+async function loadBoot() {
+  if (!S.codeOk) {
+    loading(true);
+    try {
+      var a = await gs("checkCode", S.code);
+      S.codeOk = !!a.ok;
+    } catch (e) { toast(e.message); loading(false); return; }
+    loading(false);
+    if (!S.codeOk) { showCodeCard(); return; }
+  }
+  if (!S.name) { await showPicker(); return; }
+  loading(true);
+  try {
+    S.boot = await gs("getBootstrap", ident());
+    setHomeCards(false);
+    renderHome();
+  } catch (e) { toast(e.message); }
+  finally { loading(false); }
+}
+
+$("#name-save").addEventListener("click", async function () {
+  var v = $("#name-input").value.trim();
+  if (!v) return;
+  try { v = await gs("addProfile", S.code, v); } catch (e) { toast(e.message); return; }
+  $("#name-input").value = "";
+  chooseName(v);
+});
+
+$("#who").style.cursor = "pointer";
+$("#who").title = "タップして使う人を切り替え";
+$("#who").addEventListener("click", function () { S.name = ""; store("derm_name", ""); show("home"); loadBoot(); });
+
+// ---------------------------------------------------------------- 出題
+$("#start").addEventListener("click", function () { startQuiz({ mode: S.mode, origin: S.origin, n: S.n, chapters: S.chapters, years: S.years }); });
+
+async function startQuiz(opts, presetItems) {
+  loading(true);
+  try {
+    var q = presetItems ? { session: "", seed: null, mode: "again", items: presetItems } : await gs("getQuiz", opts, ident());
+    if (!q.items.length) { toast(opts && opts.mode === "wrong" ? "復習対象の問題がありません" : "条件に合う問題がありません"); return; }
+    S.quiz = { session: q.session, items: q.items, idx: 0, results: [], answered: false, t0: Date.now() };
+    show("quiz");
+    renderQuestion();
+  } catch (e) { toast(e.message); }
+  finally { loading(false); }
+}
+
+function renderQuestion() {
+  var Q = S.quiz, item = Q.items[Q.idx];
+  Q.answered = false; Q.selected = []; Q.t0 = Date.now();
+  $("#prog").style.width = (100 * Q.idx / Q.items.length) + "%";
+  var meta = [(Q.idx + 1) + " / " + Q.items.length, chLabel(item.chapter)];
+  if (item.topic) meta.push(item.topic);
+  if (item.prev) meta.push("前回: " + (item.prev.lastCorrect ? "○" : "×"));
+  $("#qmeta").textContent = meta.join(" ・ ");
+  $("#qstem").textContent = item.stem + (item.nSelect > 1 ? "\n(" + item.nSelect + "つ選べ)" : "");
+  var box = $("#qchoices"); box.replaceChildren();
+  item.choices.forEach(function (c, i) {
+    var b = el("button", { class: "choice", "aria-pressed": "false", "data-i": String(i) },
+      el("span", { class: "lb" }, item.labels[i]), el("span", {}, c));
+    b.addEventListener("click", function () { onChoice(i); });
+    box.append(b);
+  });
+  $("#qresult").replaceChildren();
+  $("#next").hidden = true;
+  var instant = $("#instant").checked && item.nSelect === 1;
+  $("#submit").hidden = instant;
+  $("#submit").disabled = false;
+}
+
+function choiceButtons() { return [].slice.call(document.querySelectorAll("#qchoices .choice")); }
+
+function onChoice(i) {
+  var Q = S.quiz, item = Q.items[Q.idx];
+  if (Q.answered) return;
+  if (item.nSelect === 1) {
+    Q.selected = [i];
+  } else {
+    var k = Q.selected.indexOf(i);
+    if (k >= 0) Q.selected.splice(k, 1); else Q.selected.push(i);
+  }
+  choiceButtons().forEach(function (b, j) { b.setAttribute("aria-pressed", String(Q.selected.indexOf(j) >= 0)); });
+  if (item.nSelect === 1 && $("#instant").checked) submit();
+}
+$("#submit").addEventListener("click", submit);
+
+async function submit() {
+  var Q = S.quiz, item = Q.items[Q.idx];
+  if (Q.answered) return;
+  if (!Q.selected.length) { toast("選択肢を選んでください"); return; }
+  Q.answered = true;
+  $("#submit").disabled = true;
+  var seconds = Math.round((Date.now() - Q.t0) / 1000);
+  try {
+    var r = await gs("submitAnswer", { qid: item.id, selected: Q.selected, seconds: seconds, session: Q.session }, ident());
+    Q.results.push({ item: item, selected: r.selected, correct: r.correct, reveal: r, seconds: seconds });
+    choiceButtons().forEach(function (b, j) {
+      b.disabled = true;
+      if (r.answers.indexOf(j) >= 0) b.classList.add("correct");
+      else if (r.selected.indexOf(j) >= 0) b.classList.add("wrong");
+    });
+    $("#submit").hidden = true;
+    $("#qresult").replaceChildren(renderReveal(item, r, true));
+    var last = Q.idx === Q.items.length - 1;
+    $("#next").textContent = last ? "結果を見る" : "次へ";
+    $("#next").hidden = false;
+    $("#next").focus();
+  } catch (e) {
+    Q.answered = false; $("#submit").disabled = false;
+    toast(e.message);
+  }
+}
+
+function renderReveal(item, r, withVerdict) {
+  var box = el("div");
+  if (withVerdict) {
+    box.append(el("div", { class: "verdict " + (r.correct ? "ok" : "ng") },
+      (r.correct ? "正解" : "不正解") + "  (正答: " + r.answers.map(function (i) { return r.labels[i]; }).join(", ") + ")"));
+  }
+  var isPast = r.origin === "past";
+  box.append(el("div", { style: "margin:6px 0" },
+    el("span", { class: "badge " + (isPast ? "warn" : "ok") }, isPast ? "過去問" + (r.examRef ? "(" + r.examRef + ")" : "") : "新作問題"),
+    isPast ? el("span", { class: "muted" }, r.answerBasis === "official" ? "正答: 公式" : r.answerBasis === "reference" ? "正答: 外部の解答集に基づく(公式正答ではない)" : r.answerBasis === "model" ? "正答: AI推定(公式正答ではない・教科書根拠なし)" : "正答: 教科書の記載から導出(公式正答ではない)") : ""));
+  box.append(el("div", { style: "margin:8px 0" },
+    el("b", {}, "正解の選択肢"),
+    el("div", {}, r.answers.map(function (i) { return r.labels[i] + ". " + (item.choices ? item.choices[i] : ""); }).join("\n"))));
+  box.lastChild.lastChild.style.whiteSpace = "pre-wrap";
+  box.append(el("div", { class: "expl" }, r.explanation));
+  box.append(r.answerBasis === "reference"
+    ? el("div", {}, el("span", { class: "badge warn" }, "教科書根拠なし"), el("span", { class: "muted" }, "正答は外部の解答集の記載です。解説はありません。下の教科書頁は自動で探した関連箇所で、確認が必要です"))
+    : r.answerBasis === "model"
+    ? el("div", {}, el("span", { class: "badge warn" }, "教科書根拠なし"), el("span", { class: "muted" }, "正答はAIの推定です。誤りの可能性があるため、教科書・成書で確認してください"))
+    : r.grounded
+    ? el("div", {}, el("span", { class: "badge ok" }, "根拠確認済み"), el("span", { class: "muted" }, "引用が教科書本文と一致"))
+    : el("div", {}, el("span", { class: "badge warn" }, "根拠未確認"), el("span", { class: "muted" }, "教科書範囲外の内容を含む可能性があります。原典で確認してください")));
+  var allSrc = r.sources || [];
+  var overviews = allSrc.filter(function (s) { return s.kind === "overview" || s.kind === "webnote"; })
+    .sort(function (a, b) { return a.choice - b.choice; });
+  var srcs = allSrc.filter(function (s) { return s.kind !== "overview" && s.kind !== "webnote"; });
+  if (overviews.length) {
+    box.append(el("div", { style: "margin-top:12px" }, el("b", {}, "選択肢ごとの疾患概要"),
+      el("span", { class: "muted" }, " (教科書の記載、またはWeb検索による解説。いずれも自動で付けたもので、確認が必要です)")));
+    overviews.forEach(function (o) {
+      var isAns = r.answers.indexOf(o.choice) >= 0;
+      var head = el("div", { style: "margin-top:8px" },
+        el("span", { class: "badge " + (isAns ? "ok" : "warn") }, isAns ? "正解" : "選択肢"),
+        " " + r.labels[o.choice] + ". " + o.term);
+      var loc;
+      if (o.kind === "webnote") {
+        loc = el("div", { class: "muted" }, "Web検索による解説(教科書外) 出典: " + (o.source_title || "") + " ");
+        if (/^https:\/\//.test(o.url || "")) loc.append(el("a", { href: o.url, target: "_blank", rel: "noopener noreferrer" }, "開く"));
+      } else {
+        loc = el("div", { class: "muted" }, "教科書 " + chLabel(o.chapter) + " " + (o.head || "") + " / 印刷 p." + o.printed_no + "(PDF p." + o.pdf_page + ")");
+        if (r.textbookUrl) loc.append(" ", el("a", { href: r.textbookUrl + "#page=" + o.pdf_page, target: "_blank", rel: "noopener" }, "教科書を開く"));
+      }
+      box.append(head, loc, el("blockquote", {}, o.quote));
+    });
+  }
+  if (srcs.some(function (s) { return s.auto; })) {
+    box.append(el("div", { class: "muted", style: "margin-top:8px" }, "関連する教科書頁(自動推定。正答の根拠として確認済みではありません)"));
+  }
+  srcs.forEach(function (s) {
+    var loc = s.pdf_page ? "教科書 " + chLabel(s.chapter) + " " + (s.head || "") + " / 印刷 p." + s.printed_no + "(PDF p." + s.pdf_page + ")" : "教科書抜粋外";
+    var badge = s.auto ? el("span", { class: "badge warn" }, "自動推定")
+      : el("span", { class: "badge " + (s.verified ? "ok" : "ng") }, s.verified ? "一致" : "不一致");
+    var line = el("div", { class: "muted", style: "margin-top:8px" }, badge, loc);
+    if (r.textbookUrl && s.pdf_page) {
+      line.append(" ", el("a", { href: r.textbookUrl + "#page=" + s.pdf_page, target: "_blank", rel: "noopener" }, "教科書を開く(PDF p." + s.pdf_page + ")"));
+    }
+    box.append(line);
+    if (s.quote) box.append(el("blockquote", {}, s.quote));
+  });
+  if (!isPast && item && item.id && r.flagCategories) box.append(renderFlagBox(item, r));
+  return box;
+}
+
+// 新作問題の「不適切として報告」欄。報告した問題は出題から外れる(削除候補)。報告は取り消せる。
+function renderFlagBox(item, r) {
+  var box = el("div", { class: "flagbox" });
+  var cat = "";
+  function labelOf(id) {
+    var c = (r.flagCategories || []).filter(function (x) { return x.id === id; })[0];
+    return c ? c.label : id;
+  }
+  function draw() {
+    box.replaceChildren();
+    var f = r.myFlag;
+    if (f && f.flag === 1) {
+      box.append(el("div", {}, el("span", { class: "badge ng" }, "不適切として報告済み"),
+        el("span", { class: "muted" }, "理由: " + labelOf(f.category) + "。この問題は今後出題されません(削除候補)。")));
+      if (f.comment) box.append(el("blockquote", {}, f.comment));
+      var undo = el("button", { class: "sub", style: "margin-top:6px" }, "報告を取り消す");
+      undo.addEventListener("click", async function () {
+        undo.disabled = true;
+        try {
+          await gs("submitFeedback", { qid: item.id, flag: 0 }, ident());
+          r.myFlag = { flag: 0, category: "", comment: "" };
+          toast("報告を取り消しました", true);
+          draw();
+        } catch (e) { undo.disabled = false; toast(e.message); }
+      });
+      box.append(undo);
+      return;
+    }
+    var det = el("details", {}, el("summary", {}, "この問題を不適切として報告する(削除候補にする)"));
+    det.append(el("div", { class: "muted", style: "margin:6px 0" }, "理由を選んでください。報告した問題は今後出題されず、作問の改善に使われます。"));
+    var chips = el("div", { class: "chips", style: "margin-bottom:10px" });
+    (r.flagCategories || []).forEach(function (c) {
+      var chip = el("button", { class: "chip", "aria-pressed": String(cat === c.id) }, c.label);
+      chip.addEventListener("click", function () {
+        cat = c.id;
+        chips.querySelectorAll(".chip").forEach(function (x, i) { x.setAttribute("aria-pressed", String(r.flagCategories[i].id === cat)); });
+        send.disabled = false;
+      });
+      chips.append(chip);
+    });
+    var ta = el("textarea", { maxlength: "500", placeholder: "コメント(任意・500字まで): どこが問題か、どう直すとよいか" });
+    var send = el("button", { class: "danger", disabled: true, style: "margin-top:8px" }, "不適切として報告する");
+    send.addEventListener("click", async function () {
+      if (!cat) { toast("理由を選んでください"); return; }
+      send.disabled = true;
+      try {
+        var res = await gs("submitFeedback", { qid: item.id, flag: 1, category: cat, comment: ta.value }, ident());
+        r.myFlag = { flag: 1, category: res.category, comment: res.comment };
+        toast("報告しました。この問題は今後出題されません", true);
+        draw();
+      } catch (e) { send.disabled = false; toast(e.message); }
+    });
+    det.append(chips, ta, send);
+    box.append(det);
+  }
+  draw();
+  return box;
+}
+
+$("#next").addEventListener("click", function () {
+  var Q = S.quiz;
+  if (Q.idx >= Q.items.length - 1) { showSummary(); return; }
+  Q.idx += 1; renderQuestion(); window.scrollTo(0, 0);
+});
+$("#quit").addEventListener("click", function () { if (S.quiz && S.quiz.results.length) showSummary(); else { show("home"); loadBoot(); } });
+
+document.addEventListener("keydown", function (e) {
+  if (S.screen !== "quiz" || e.target.tagName === "INPUT") return;
+  var Q = S.quiz;
+  if (!Q) return;
+  if (!Q.answered && /^[1-9]$/.test(e.key)) {
+    var i = parseInt(e.key, 10) - 1;
+    if (i < Q.items[Q.idx].choices.length) onChoice(i);
+  } else if (e.key === "Enter") {
+    if (Q.answered) $("#next").click(); else if (!$("#submit").hidden) submit();
+  }
+});
+
+// ---------------------------------------------------------------- 結果
+function showSummary() {
+  var Q = S.quiz, res = Q.results;
+  var ok = res.filter(function (r) { return r.correct; }).length;
+  var secs = res.reduce(function (s, r) { return s + r.seconds; }, 0);
+  $("#prog").style.width = "100%";
+  $("#sum-stats").replaceChildren(
+    el("div", { class: "stat" }, el("div", { class: "v" }, ok + "/" + res.length), el("div", { class: "muted" }, "正解数")),
+    el("div", { class: "stat" }, el("div", { class: "v" }, res.length ? pct(ok / res.length) : "-"), el("div", { class: "muted" }, "正答率")),
+    el("div", { class: "stat" }, el("div", { class: "v" }, res.length ? Math.round(secs / res.length) + "秒" : "-"), el("div", { class: "muted" }, "平均所要")));
+  var list = $("#sum-list"); list.replaceChildren(el("h2", {}, "解答一覧(タップで解説)"));
+  res.forEach(function (r, i) {
+    var detail = el("div", { hidden: true });
+    var head = el("div", { class: "hist" },
+      el("span", { class: "mark " + (r.correct ? "ok" : "ng") }, r.correct ? "○" : "×"),
+      el("div", {}, el("div", {}, (i + 1) + ". " + r.item.stem.slice(0, 90)), el("div", { class: "muted" }, chLabel(r.item.chapter))));
+    head.addEventListener("click", function () {
+      if (!detail.childNodes.length) {
+        detail.append(el("div", { class: "muted" }, "あなたの回答: " + r.selected.map(function (x) { return r.item.labels[x]; }).join(", ")));
+        detail.append(renderReveal(r.item, r.reveal, true));
+      }
+      detail.hidden = !detail.hidden;
+    });
+    list.append(head, detail);
+  });
+  $("#retry-wrong").hidden = res.every(function (r) { return r.correct; });
+  show("summary");
+}
+$("#retry-wrong").addEventListener("click", function () {
+  var wrong = S.quiz.results.filter(function (r) { return !r.correct; }).map(function (r) { return r.item; });
+  startQuiz(null, wrong);
+});
+$("#to-home").addEventListener("click", function () { show("home"); loadBoot(); });
+
+// ---------------------------------------------------------------- 成績・履歴
+async function loadStats() {
+  show("stats");
+  loading(true);
+  try {
+    var s = await gs("getStats", ident());
+    renderStats(s);
+  } catch (e) { toast(e.message); }
+  finally { loading(false); }
+}
+
+function renderStats(s) {
+  var box = $("#stats"); box.replaceChildren();
+  var o = s.overall;
+  box.append(el("div", { class: "card" }, el("div", { class: "row" },
+    el("div", { class: "stat" }, el("div", { class: "v" }, o.attempts), el("div", { class: "muted" }, "総回答数")),
+    el("div", { class: "stat" }, el("div", { class: "v" }, pct(o.accuracy)), el("div", { class: "muted" }, "通算正答率")),
+    el("div", { class: "stat" }, el("div", { class: "v" }, o.avgSeconds === null ? "-" : Math.round(o.avgSeconds) + "秒"), el("div", { class: "muted" }, "平均所要")))));
+
+  var maxA = Math.max.apply(null, s.daily.map(function (d) { return d.attempts; }).concat([1]));
+  var daily = el("div", { class: "daily" });
+  s.daily.forEach(function (d) {
+    var h = 100 * d.attempts / maxA;
+    var col = el("div", { style: "height:" + Math.max(h, 4) + "%", title: d.date + ": " + d.correct + "/" + d.attempts });
+    if (d.attempts) col.append(el("i", { style: "height:" + (100 * d.correct / d.attempts) + "%" }));
+    daily.append(col);
+  });
+  box.append(el("div", { class: "card" }, el("h2", {}, "直近14日の回答数(濃色=正解)"), daily,
+    el("div", { class: "muted", style: "display:flex;justify-content:space-between" }, el("span", {}, s.daily[0].date.slice(5)), el("span", {}, s.daily[s.daily.length - 1].date.slice(5)))));
+
+  var tb = el("tbody");
+  s.chapters.forEach(function (c) {
+    tb.append(el("tr", {},
+      el("td", {}, chLabel(c.chapter)),
+      el("td", {}, c.answered + "/" + c.total),
+      el("td", {}, pct(c.accuracy)),
+      el("td", { style: "min-width:90px" }, el("div", { class: "bar " + barClass(c.accuracy) }, el("i", { style: "width:" + (c.accuracy === null ? 0 : Math.round(c.accuracy * 100)) + "%" }))),
+      el("td", {}, c.wrongNow ? el("span", { class: "badge ng" }, "要復習 " + c.wrongNow) : "")));
+  });
+  box.append(el("div", { class: "card" }, el("h2", {}, "章別の成績(赤=60%未満)"),
+    s.chapters.length ? el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "章"), el("th", {}, "回答済"), el("th", {}, "正答率"), el("th", {}, ""), el("th", {}, ""))), tb)
+      : el("div", { class: "muted" }, "まだ問題がありません。")));
+
+  var hist = el("div", { class: "card" }, el("h2", {}, "直近の回答(タップで解説)"));
+  if (!s.recent.length) hist.append(el("div", { class: "muted" }, "まだ回答がありません。"));
+  s.recent.forEach(function (r) {
+    var detail = el("div", { hidden: true });
+    var row = el("div", { class: "hist" },
+      el("span", { class: "mark " + (r.correct ? "ok" : "ng") }, r.correct ? "○" : "×"),
+      el("div", {}, el("div", {}, r.stem), el("div", { class: "muted" }, r.ts + " ・ " + chLabel(r.chapter))));
+    row.addEventListener("click", async function () {
+      if (!detail.childNodes.length) {
+        try {
+          var d = await gs("getQuestionDetail", r.qid, ident());
+          detail.append(el("div", { class: "stem", style: "font-size:15px" }, d.question.stem));
+          d.question.choices.forEach(function (c, i) {
+            detail.append(el("div", { class: "choice " + (d.answers.indexOf(i) >= 0 ? "correct" : ""), style: "cursor:default;min-height:0;padding:8px 12px" },
+              el("span", { class: "lb" }, d.labels[i]), el("span", {}, c)));
+          });
+          detail.append(renderReveal(d.question, { correct: r.correct, answers: d.answers, labels: d.labels, explanation: d.explanation, grounded: d.grounded, sources: d.sources, origin: d.origin, examRef: d.examRef, answerBasis: d.answerBasis, textbookUrl: d.textbookUrl, flagCategories: d.flagCategories, myFlag: d.myFlag }, false));
+        } catch (e) { toast(e.message); return; }
+      }
+      detail.hidden = !detail.hidden;
+    });
+    hist.append(row, detail);
+  });
+  box.append(hist);
+  box.append(el("button", { class: "sub", onclick: function () { S.mode = "wrong"; show("home"); loadBoot(); } }, "「間違えた問題」を演習する"));
+}
+
+// ---------------------------------------------------------------- 起動
+S.name = store("derm_name") || "";
+S.code = store("derm_code") || "";
+try { S.years = (JSON.parse(store("derm_years") || "[]") || []).map(Number); } catch (e) { S.years = []; }
+loadBoot();
+</script>
+</body>
+</html>
